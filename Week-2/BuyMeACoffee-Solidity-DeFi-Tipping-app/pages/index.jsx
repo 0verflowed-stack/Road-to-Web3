@@ -15,6 +15,7 @@ export default function Home() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [memos, setMemos] = useState([]);
+  const [withdrawalAddress, setWithdrawalAddress] = useState("");
 
   const onNameChange = (event) => {
     setName(event.target.value);
@@ -23,6 +24,10 @@ export default function Home() {
   const onMessageChange = (event) => {
     setMessage(event.target.value);
   }
+
+  const onNewWithdrawalAddressChange = (e) => {
+    setWithdrawalAddress(e.target.value);
+  };
 
   // Wallet connection logic
   const isWalletConnected = async () => {
@@ -61,6 +66,34 @@ export default function Home() {
     }
   }
 
+  const changeWithdrawalAddress = async () => {
+    try {
+      const {ethereum} = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const signer = provider.getSigner();
+        const buyMeACoffee = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        console.log("changing owner..")
+        const coffeeTxn = await buyMeACoffee.changeWithdrawalAddress(withdrawalAddress);
+
+        await coffeeTxn.wait();
+
+        console.log("mined ", coffeeTxn.hash);
+
+        console.log("owner changed!");
+
+        // Clear the form fields.
+        setWithdrawalAddress("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const buyCoffee = async (large) => {
     try {
       const {ethereum} = window;
@@ -196,6 +229,7 @@ export default function Home() {
                   placeholder="anon"
                   onChange={onNameChange}
                   />
+                 
               </div>
               <br/>
               <div>
@@ -213,6 +247,16 @@ export default function Home() {
                 >
                 </textarea>
               </div>
+              <label>
+                  New withdrawal address
+                </label>
+                <br/>
+                <input
+                  id="newWithdrawalAddress"
+                  type="text"
+                  placeholder="address"
+                  onChange={onNewWithdrawalAddressChange}
+                  />
               <div>
                 <button
                   type="button"
@@ -225,6 +269,12 @@ export default function Home() {
                   onClick={async () => await buyCoffee(true)}
                 >
                   Send 1 LARGE Coffee for 0.003ETH
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => await changeWithdrawalAddress()}
+                >
+                  Change withdrawal address
                 </button>
               </div>
             </form>
