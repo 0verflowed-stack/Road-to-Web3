@@ -7,7 +7,7 @@ import styles from '../styles/Home.module.css'
 
 export default function Home() {
   // Contract Address & ABI
-  const contractAddress = "0x1921d5e42228d8F530eE4Aa3088211EbFaed3d4D";
+  const contractAddress = "0x809B40F6aF2fd5069C18bc7Fd6b33230DD543374";
   const contractABI = abi.abi;
 
   // Component state
@@ -74,11 +74,15 @@ export default function Home() {
         );
 
         console.log("buying coffee..")
-        const coffeeTxn = await buyMeACoffee.buyMeACoffee(
+        const coffeeTxn = await (large ?                              buyMeACoffee.buyMeALargeCoffee(
           name ? name : "anon",
           message ? message : "Enjoy your coffee!",
-          {value: ethers.utils.parseEther(large ? "0.003" : "0.001")}
-        );
+          {value: ethers.utils.parseEther("0.003")}
+        ):buyMeACoffee.buyMeACoffee(
+          name ? name : "anon",
+          message ? message : "Enjoy your coffee!",
+          {value: ethers.utils.parseEther("0.001")}
+        ));
 
         await coffeeTxn.wait();
 

@@ -40,19 +40,15 @@ contract BuyMeACoffee {
      * @param _message a nice message from coffee buyer
      */
     function buyMeACoffee(string memory _name, string memory _message) public payable {
-        require(msg.value == 0.001 ether || msg.value == 0.003 ether, "Cannot buy coffee. Normal coffee costs 0.001 eth, large 0.003 eth!");
+        require(msg.value == 0.001 ether, "Cannot buy coffee. Normal coffee costs 0.001 eth, large 0.003 eth!");
 
-        bool isLargeCoffee = false;
-        if (msg.value == 0.003 ether) {
-            isLargeCoffee = true;
-        }
         // Add memos to storage
         memos.push(Memo(
             msg.sender,
             block.timestamp,
             _name,
             _message,
-            isLargeCoffee
+            false
         ));
 
         // Emit log event when a new memo is created
@@ -61,7 +57,29 @@ contract BuyMeACoffee {
             block.timestamp,
             _name,
             _message,
-            isLargeCoffee
+            false
+        );
+    }
+
+    function buyMeALargeCoffee(string memory _name, string memory _message) public payable {
+        require(msg.value == 0.003 ether, "Cannot buy coffee. Normal coffee costs 0.001 eth, large 0.003 eth!");
+
+        // Add memos to storage
+        memos.push(Memo(
+            msg.sender,
+            block.timestamp,
+            _name,
+            _message,
+            true
+        ));
+
+        // Emit log event when a new memo is created
+        emit NewMemo(
+            msg.sender,
+            block.timestamp,
+            _name,
+            _message,
+            true
         );
     }
 
